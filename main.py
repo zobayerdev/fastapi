@@ -3,11 +3,6 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-class User(BaseModel):
-    age: int
-    name: str
-    email: str
-
 #* create home route with GET method
 @app.get("/")
 async def home():
@@ -48,6 +43,11 @@ async def get_items(name: str = None, price: int = 10):
         "price": price
     }
 
+
+class User(BaseModel):
+    age: int
+    name: str
+    email: str
 
 # * POST API Method
 @app.post("/create_user")
