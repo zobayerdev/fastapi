@@ -3,7 +3,9 @@ from pydantic import BaseModel
 
 app = FastAPI()
 
-# #* create home route with GET method
+# * #############################################################
+# * #                       GET method                          #
+# * #############################################################
 # @app.get("/")
 # async def home():
 #     return {
@@ -35,7 +37,10 @@ app = FastAPI()
 #         "limit": limit
 #     }
 
-# # * default parameter & optional parameter
+
+# * #############################################################
+# * #      Default parameter & Optional parameter               #
+# * #############################################################
 # @app.get("/items")
 # async def get_items(name: str = None, price: int = 10):
 #     return {
@@ -43,13 +48,14 @@ app = FastAPI()
 #         "price": price
 #     }
 
-
+# * #############################################################
+# * #                POST API Method                            #
+# * #############################################################
 # class User(BaseModel):
 #     age: int
 #     name: str
 #     email: str
 
-# # * POST API Method
 # @app.post("/create_user")
 # async def create_user(user: User):
 #     return{
@@ -58,8 +64,9 @@ app = FastAPI()
 #         "user":user
 #     }
 
-
-#* Pydantic Model
+# * #############################################################
+# * #                Pydantic Model                             #
+# * #############################################################
 
 # class UserAddress(BaseModel):
 #     city: str
