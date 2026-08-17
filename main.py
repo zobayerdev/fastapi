@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, status
 from pydantic import BaseModel
 
 app = FastAPI()
@@ -172,26 +172,72 @@ app = FastAPI()
 # * #                Path + Query + Body Combo                  #
 # * #############################################################
 
-users = []
+# users = []
 
-class User(BaseModel):
-    name: str
-    age: int
+# class User(BaseModel):
+#     name: str
+#     age: int
 
-@app.post("/users")
-async def create_user(user:User):
-    users.append(user)
+# @app.post("/api/v1/users")
+# async def create_user(user:User):
+#     users.append(user)
+#     return {
+#         "data":user
+#     }
+
+# @app.put("/api/v1/users/{user_id}")
+# async def updated_user(user_id: int, user:User, notify:bool = False):
+#     if user_id < len(users):
+#         users[user_id] = user
+
+#         return {
+#             "message": "User Update",
+#             "notify":notify,
+#             "data":user            
+#         }
+
+
+# * #############################################################
+# * #                    Response Model                         #
+# * #############################################################
+
+# class User(BaseModel):
+#     name: str
+#     age: int
+#     password: str
+
+# # * eikhane thik hobe user response e ami ki ki dibo eikhane, that's it    
+# class UserResponse(BaseModel):
+#     name: str
+#     age: int
+    
+# @app.get("/user", response_model=UserResponse)
+# async def get_user():
+#     return {
+#         "name": "John Doe",
+#         "age": 30,
+#         "password": "123456"
+#         }
+
+
+# * #############################################################
+# * #             Status Code and Response                      #
+# * #############################################################
+
+@app.post("/create_user", status_code= status.HTTP_201_CREATED)
+def create_user():
     return {
-        "data":user
+        "message":"User Create"
     }
-
-@app.put("/users/{user_id}")
-async def updated_user(user_id: int, user:User, notify:bool = False):
-    if user_id < len(users):
-        users[user_id] = user
-
-        return {
-            "message": "User Update",
-            "notify":notify,
-            "data":user            
+    
+@app.get("/user")
+def get_user():
+    return{
+        "status":"Success",
+        "message":"User Fetched",
+        "data":{
+            "name":"Zobayer",
+            "age":26,
+            "location":"Dhaka, Gopalganj"
         }
+    }    
