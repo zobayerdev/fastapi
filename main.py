@@ -1,5 +1,8 @@
-from fastapi import FastAPI, status
+from fastapi import FastAPI, status, Request
 from pydantic import BaseModel
+import time
+import sqlite3
+
 
 app = FastAPI()
 
@@ -224,20 +227,71 @@ app = FastAPI()
 # * #             Status Code and Response                      #
 # * #############################################################
 
-@app.post("/create_user", status_code= status.HTTP_201_CREATED)
-def create_user():
-    return {
-        "message":"User Create"
-    }
+# @app.post("/create_user", status_code= status.HTTP_201_CREATED)
+# def create_user():
+#     return {
+#         "message":"User Create"
+#     }
     
-@app.get("/user")
-def get_user():
-    return{
-        "status":"Success",
-        "message":"User Fetched",
-        "data":{
-            "name":"Zobayer",
-            "age":26,
-            "location":"Dhaka, Gopalganj"
-        }
-    }    
+# @app.get("/user")
+# def get_user():
+#     return{
+#         "status":"Success",
+#         "message":"User Fetched",
+#         "data":{
+#             "name":"Zobayer",
+#             "age":26,
+#             "location":"Dhaka, Gopalganj"
+#         }
+#     }    
+
+
+# * #############################################################
+# * #                          Middleware                       #
+# * #############################################################
+
+# @app.middleware("http")
+# async def my_middleware(request: Request, call_next):
+#     print("Request Recived")
+
+#     response = await call_next(request)
+
+#     print("Response Sent")
+
+#     return response
+
+
+# @app.middleware("http")
+# async def log_middleware(request: Request, call_next):
+#     start_time = time.time()
+
+#     response = await call_next(request)
+
+#     process_time = time.time()-start_time
+
+#     print(f"Path:{request.url.path} | Time: {process_time}")
+
+#     return response
+
+# * #############################################################
+# * #                   Database Integration                    #
+# * #############################################################
+
+conn = sqlite3.connect("test.db", check_same_thread=False) # eikhane 2 ta jinis ditei hobe
+
+cursor = conn.cursor()  # curson sql query run kore
+
+cursor.execute("""CREATE TABLE IF NOT EXISTS todos (
+id INTEGER PRIMARY KEY,
+title TEXT,
+completed TEXT
+)""")
+
+conn.commit()
+
+
+@app.get("/")
+def home():
+    return {
+        "message":"SQL Connected Fine"
+    }
