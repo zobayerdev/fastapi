@@ -1,7 +1,11 @@
-from fastapi import FastAPI, status, Request
+
+from fastapi import FastAPI, status, HTTPException, Depends, Header, Request, Depends
 from pydantic import BaseModel
 import time
 import sqlite3
+from sqlalchemy import create_engine, Column, Integer, String
+from sqlalchemy.orm import sessionmaker, declarative_base,Session
+
 
 
 app = FastAPI()
@@ -273,25 +277,109 @@ app = FastAPI()
 
 #     return response
 
+
+# * #############################################################
+# * #          Dependancy Injection & Reusable Methods.         #
+# * #############################################################
+
+# def common_logic():
+#     return {
+#         "message": "Common Logic executed"
+#     }
+
+# @app.get("/home")
+# def home(data = Depends(common_logic)):
+#     return data
+
+
+# **************************************
+# def get_current_user():
+#     return {
+#         "user": "Mohit"
+#     }
+
+# @app.get("/profile")
+# def profile(data = Depends(get_current_user)):
+#     return data
+
+# @app.get("/dashboard")
+# def profile(data = Depends(get_current_user)):
+#     return data
+
+
+# def varify_token(token: str = Header(None)):
+#     if token != "mysecrettoken":
+#         raise HTTPException(
+#             status = 401,
+#             detail = "Unauthorized"
+            
+#         )
+#     return{
+#         "user":"Authorized User"
+#     }
+
+# @app.get("/secure-data")
+# async def secure_data(user = Depends(varify_token)):
+#     return {
+#         "message":"Secure data accessed",
+#        "user":user 
+#     }
+
+
 # * #############################################################
 # * #                   Database Integration                    #
 # * #############################################################
 
-conn = sqlite3.connect("test.db", check_same_thread=False) # eikhane 2 ta jinis ditei hobe
+# conn = sqlite3.connect("test.db", check_same_thread=False) # eikhane 2 ta jinis ditei hobe
 
-cursor = conn.cursor()  # curson sql query run kore
+# cursor = conn.cursor()  # curson sql query run kore
 
-cursor.execute("""CREATE TABLE IF NOT EXISTS todos (
-id INTEGER PRIMARY KEY,
-title TEXT,
-completed TEXT
-)""")
+# cursor.execute("""CREATE TABLE IF NOT EXISTS todos (
+# id INTEGER PRIMARY KEY,
+# title TEXT,
+# completed TEXT
+# )""")
 
-conn.commit()
+# conn.commit()
 
+
+# @app.get("/")
+# def home():
+#     return {
+#         "message":"SQL Connected Fine"
+#     }
+
+
+# * #############################################################
+# * #          Database Integration(SQLAlchemy)                 #
+# * #############################################################
+DATABASE_URL = "sqlite:///./text.db"
+
+engine = create_engine(DATABASE_URL, connect_args={"check_same_thread":False}) #database connect er jonno create_engine lagbe must
+
+
+sessionLocal = sessionmaker(bind=engine)
+
+Base = declarative_base()
+
+class Todo(Base):
+    __tablename__ = "todos"
+
+    id = Column(Integer, primary_key=True, index=True)
+    title = Column(String)
+    completed = Column(String)
+
+Base.metadata.create_all(bind=engine)
+
+def get_db():
+    db = sessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 @app.get("/")
-def home():
-    return {
-        "message":"SQL Connected Fine"
+def home(db: Session = Depends(get_db)):
+    return{
+        "message": "DB connected fine"
     }
